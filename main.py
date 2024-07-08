@@ -16,7 +16,7 @@ with open('coreboot.img', 'rb') as f:
 
 with open('decrypted.gz', 'wb') as f:
     sectorNum = 0
-    while sectorNum * 0x200 < len(encryptedData):
+    while len(encryptedData) - sectorNum * 0x200 >= 0x200:
         dataStartPos = sectorNum * 0x200
         dataEndPos = dataStartPos + 0x200
         thisBlock = encryptedData[dataStartPos:dataEndPos]
@@ -42,3 +42,6 @@ with open('decrypted.gz', 'wb') as f:
             sectorNumBytes = nextSectorNumBytes
 
         sectorNum = sectorNum + 1
+        
+    if len(encryptedData) - sectorNum * 0x200 > 0:
+        f.write(encryptedData[sectorNum * 0x200:len(encryptedData)])
